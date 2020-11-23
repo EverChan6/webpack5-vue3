@@ -31,6 +31,27 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env']
+          }
+        },
+        exclude: /node_modules/
+      },
+      {
+        test: /\.vue$/,
+        use: [{
+          loader: 'vue-loader',
+          options: {
+            compilerOptions: {
+              preserveWhitespace: false
+            }
+          }
+        }]
+      },
+      {
         test: /\.css$/,
         use: [
         {
@@ -128,27 +149,6 @@ module.exports = {
             }
           }
         ]
-      },
-      {
-        test: /\.vue$/,
-        use: [{
-          loader: 'vue-loader',
-          options: {
-            compilerOptions: {
-              preserveWhitespace: false
-            }
-          }
-        }]
-      },
-      {
-        test: /\.js$/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env']
-          }
-        },
-        exclude: /node_modules/
       }
     ]
   },
