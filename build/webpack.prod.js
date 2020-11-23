@@ -6,7 +6,7 @@ const webpackConfig = require('./webpack.config.js')
 const { merge } = require('webpack-merge')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin  = require('terser-webpack-plugin')
 
 module.exports = merge(webpackConfig, {
   mode: 'production',
@@ -21,12 +21,18 @@ module.exports = merge(webpackConfig, {
     })
   ],
   optimization: {
+    minimize: true,
     minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
+      new TerserPlugin({
         parallel: true,
-        sourceMap: true,
-        exclude: /node_modules/
+        terserOptions: {
+          warnings: false,
+          compress: {
+            drop_console: true,// 注释console
+            drop_debugger: true, // 注释debugger
+            pure_funcs: ["console.log"]
+          }
+        }
       }),
       new OptimizeCssAssetsPlugin({})
     ],
@@ -49,5 +55,9 @@ module.exports = merge(webpackConfig, {
         }
       }
     }
+  },
+  performance: {
+    maxEntrypointSize: 500000,
+    maxAssetSize: 500000
   }
 })
