@@ -5,8 +5,9 @@ const path = require('path')
 const webpackConfig = require('./webpack.config.js')
 const { merge } = require('webpack-merge')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserPlugin  = require('terser-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const FileListPlugin = require('../webpack-firstPlugin.js')
 
 module.exports = merge(webpackConfig, {
   mode: 'production',
@@ -18,7 +19,8 @@ module.exports = merge(webpackConfig, {
         from: path.resolve(__dirname, '../public'),
         to: path.resolve(__dirname, '../dist')
       }]
-    })
+    }),
+    new FileListPlugin()
   ],
   optimization: {
     minimize: true,
@@ -34,7 +36,7 @@ module.exports = merge(webpackConfig, {
           }
         }
       }),
-      new OptimizeCssAssetsPlugin({})
+      new CssMinimizerPlugin()
     ],
     splitChunks: {
       chunks: "async",
@@ -44,9 +46,15 @@ module.exports = merge(webpackConfig, {
       maxInitialRequests: 3,
       automaticNameDelimiter: '~',
       cacheGroups: {
-        vendors: {
+        defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
           priority: -10
+        },
+        styles: {
+          name: 'styles',
+          test: /\.(sa|sc|c)ss$/,
+          chunks: 'all',
+          enforce: true,
         },
         default: {
           minChunks: 2,
